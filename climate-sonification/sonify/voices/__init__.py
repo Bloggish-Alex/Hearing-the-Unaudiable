@@ -1,7 +1,9 @@
 from ..scales import Scale
 from .base import VoiceContext, VoiceGenerator
+from .slots_melody import SlotsMelodyVoice
 
 GENERATORS: dict[str, type[VoiceGenerator]] = {
+    "slots_melody": SlotsMelodyVoice,
 }
 
 __all__ = [
@@ -9,6 +11,7 @@ __all__ = [
     "VoiceContext",
     "VoiceGenerator",
     "build_generator",
+    "SlotsMelodyVoice",
 ]
 
 
