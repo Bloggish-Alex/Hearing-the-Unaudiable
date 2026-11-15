@@ -38,6 +38,15 @@ voices:
       staccato_delta: 0.15
       duration_factor: 0.55
 
+  - id: 1
+    name: bass
+    generator: bassline
+    series: temp
+    roots: [45, 48, 50, 52, 55]
+    octave_threshold: 0.6
+    velocity: {base: 52, per_mean: 22, floor: 48, ceiling: 86}
+
+
 form:
   series: temp # refer to dataset loaded from csv file: {"temp": {}, }
   rest:

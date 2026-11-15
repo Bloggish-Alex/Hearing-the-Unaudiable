@@ -42,7 +42,7 @@ class ClimateCompositionTest(unittest.TestCase):
                 voice_id: len(notes)
                 for voice_id, notes in self.notes.items()
             },
-            {0: 816},
+            {0: 816, 1: 370},
         )
 
     def test_tempo_map(self) -> None:
