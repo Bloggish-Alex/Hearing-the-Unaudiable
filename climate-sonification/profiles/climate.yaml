@@ -37,3 +37,20 @@ voices:
       hold_max: 3
       staccato_delta: 0.15
       duration_factor: 0.55
+
+form:
+  series: temp # refer to dataset loaded from csv file: {"temp": {}, }
+  rest:
+    bar_offsets: [3, 7]
+    slots: [6, 9]
+  cadence:
+    slots: 6
+    voice: 0  # refer to voice.id
+    velocity: {base: 60, span: 55, floor: 50, ceiling: 118}
+  tempo:
+    base: 68
+    slope: 44
+    reference: 0.075
+    window: 0.035
+    floor: 68
+    ceiling: 112

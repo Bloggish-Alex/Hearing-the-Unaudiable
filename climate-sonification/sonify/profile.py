@@ -37,6 +37,7 @@ class Profile:
     timing: Timing
     scales: dict[str, Scale]
     voices: list[VoiceSpec]
+    form: dict
 
     @classmethod
     def load(cls, path: Path) -> Profile:
@@ -80,5 +81,6 @@ class Profile:
             end_year=data["end_year"],
             timing=timing,
             scales=scales,
-            voices=voices
+            voices=voices,
+            form=raw["form"],
         )
