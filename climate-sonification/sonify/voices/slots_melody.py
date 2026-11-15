@@ -54,9 +54,7 @@ class SlotsMelodyVoice(VoiceGenerator):
                 value = months[index]
                 previous = months[index - 1] if index > 0 else previous_bar_last
 
-                notes_in_slot, next_steps = self._generate_step(
-                    previous, value, bar, index, slot, months, ctx
-                )
+                notes_in_slot, next_steps = self._generate_step(previous, value, bar, index, slot, months, ctx)
 
                 notes.extend(notes_in_slot)
                 slot += next_steps
@@ -78,6 +76,7 @@ class SlotsMelodyVoice(VoiceGenerator):
         
         if self.scale is None:
             raise ValueError("slots_melody requires a scale")
+
         scale = self.scale
 
         rhythm = self.options["rhythm"]
