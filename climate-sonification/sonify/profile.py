@@ -38,6 +38,7 @@ class Profile:
     scales: dict[str, Scale]
     voices: list[VoiceSpec]
     form: dict
+    render: dict
 
     @classmethod
     def load(cls, path: Path) -> Profile:
@@ -83,4 +84,5 @@ class Profile:
             scales=scales,
             voices=voices,
             form=raw["form"],
+            render=raw["render"]
         )

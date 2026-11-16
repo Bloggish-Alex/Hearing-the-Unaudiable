@@ -63,3 +63,6 @@ form:
     window: 0.035
     floor: 68
     ceiling: 112
+
+render:
+  midi_program: {0: 73, 1: 42} # flute, cello
