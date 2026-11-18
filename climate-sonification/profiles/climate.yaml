@@ -66,3 +66,25 @@ form:
 
 render:
   midi_program: {0: 73, 1: 42} # flute, cello
+  abc:
+    key: Am
+    time_signature: [12, 8]
+    tempo_unit: "3/8"
+    default_length: "1/8"
+    length_mode: legacy        # legacy | exact
+    accidentals: sharps        # sharps | flats
+    emit_midi_program: true
+    dynamics:
+      marks: ["!p!", "!mp!", "!mf!", "!f!", "!ff!"]
+      thresholds: [-0.4, 0.05, 0.5, 0.95, 1.4]
+      default: "!mf!"
+    voice_names:
+      0: "Temperature (flute)"
+      1: "Bass (cello)"
+    voice_clefs:
+      0: treble
+      1: bass
+    credit: "Data: NASA GISTEMP v4 + NOAA Mauna Loa CO2. Public domain."
+    comments:
+      - "temperature: A minor pentatonic A3-A5; pitch=anomaly, rhythm=volatility"
+      - "form: 10-bar decades; breath rests at bars 4 and 8; cadence + motif at bar 10"

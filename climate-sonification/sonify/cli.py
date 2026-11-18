@@ -10,7 +10,7 @@ from pathlib import Path
 from .model import Composition
 from .compose import Composer
 from .profile import Profile
-from .render import MidiWriter
+from .render import ABCWriter, MidiWriter
 from .sources import ClimateSource
 
 DEFAULT_PROFILE = Path("profiles/climate.yaml")
@@ -52,18 +52,30 @@ def build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="list the profile's voices and exit",
     )
+    parser.add_argument(
+        "--abc",
+        action="store_true",
+        help="also write ABC notation",
+    )
     return parser
 
-def print_info(profile: Profile, composition: Composition, mid_path: str):
+def print_info(
+    profile: Profile,
+    composition: Composition,
+    mid_path: str,
+    abc_path: str | None = None,
+):
     _, total = composition.bar_times()
     voice_label = ", ".join(f"{voice.label}={len(voice.notes)}" for voice in composition.voices)
 
     print(f"profile  : {profile.name} — {profile.title}")
     print(f"bars     : {composition.n_bars}")
     print(f"voices   : {voice_label}")
-    print(f"tempo    : {composition.tempo_map}")    
+    print(f"tempo    : {composition.tempo_map}")
     print(f"duration : {total:.1f}s")
     print(f"midi     : {mid_path}")
+    if abc_path is not None:
+        print(f"abc      : {abc_path}")
 
     return
 
@@ -101,7 +113,17 @@ def main(argv: list[str] | None = None) -> int:
     midi_writer = MidiWriter(ticks_per_beat=profile.timing.ticks_per_quarter, bar_ticks=profile.timing.bar_ticks, config=profile.render)
     midi_writer.write(composition, mid_path)
 
-    print_info(profile, composition, mid_path)
+    abc_path = None
+    if args.abc:
+        abc_path = args.out.with_suffix(".abc")
+        ABCWriter(
+            eighth=profile.timing.eighth,
+            bar_ticks=profile.timing.bar_ticks,
+            section_bars=profile.timing.section_bars,
+            config=profile.render,
+        ).write(composition, abc_path)
+
+    print_info(profile, composition, mid_path, abc_path)
 
     return 0
 

@@ -11,13 +11,12 @@ from pathlib import Path
 
 import mido
 
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
 from sonify.cli import main
 from sonify.model import Composition, Note, Voice
 from sonify.render import MidiWriter
-
-
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))
 
 
 class MidiWriterTest(unittest.TestCase):
@@ -82,11 +81,13 @@ class CliTest(unittest.TestCase):
                     "--out",
                     str(out),
                     "--voices",
-                    "1"
+                    "1",
+                    "--abc",
                 ]
             )
             self.assertEqual(code, 0)
             self.assertTrue(out.with_suffix(".mid").exists())
+            self.assertTrue(out.with_suffix(".abc").exists())
 
 
 if __name__ == "__main__":
