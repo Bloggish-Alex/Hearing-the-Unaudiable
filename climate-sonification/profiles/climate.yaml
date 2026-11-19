@@ -88,3 +88,5 @@ render:
     comments:
       - "temperature: A minor pentatonic A3-A5; pitch=anomaly, rhythm=volatility"
       - "form: 10-bar decades; breath rests at bars 4 and 8; cadence + motif at bar 10"
+  player:
+    subtitle: "NASA GISTEMP × NOAA Mauna Loa CO₂"

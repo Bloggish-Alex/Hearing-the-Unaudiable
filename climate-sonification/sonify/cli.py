@@ -10,7 +10,7 @@ from pathlib import Path
 from .model import Composition
 from .compose import Composer
 from .profile import Profile
-from .render import ABCWriter, MidiWriter
+from .render import ABCWriter, MidiWriter, PlayerJsonWriter
 from .sources import ClimateSource
 
 DEFAULT_PROFILE = Path("profiles/climate.yaml")
@@ -57,6 +57,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="also write ABC notation",
     )
+    parser.add_argument(
+        "--player",
+        action="store_true",
+        help="also write the web player payload (.js)",
+    )
     return parser
 
 def print_info(
@@ -64,6 +69,7 @@ def print_info(
     composition: Composition,
     mid_path: str,
     abc_path: str | None = None,
+    player_path: str | None = None,
 ):
     _, total = composition.bar_times()
     voice_label = ", ".join(f"{voice.label}={len(voice.notes)}" for voice in composition.voices)
@@ -74,8 +80,12 @@ def print_info(
     print(f"tempo    : {composition.tempo_map}")
     print(f"duration : {total:.1f}s")
     print(f"midi     : {mid_path}")
+
     if abc_path is not None:
         print(f"abc      : {abc_path}")
+
+    if player_path is not None:
+        print(f"player   : {player_path}")
 
     return
 
@@ -123,7 +133,15 @@ def main(argv: list[str] | None = None) -> int:
             config=profile.render,
         ).write(composition, abc_path)
 
-    print_info(profile, composition, mid_path, abc_path)
+    player_path = None
+    if args.player:
+        player_path = args.out.with_suffix(".js")
+        PlayerJsonWriter(
+            bar_ticks=profile.timing.bar_ticks,
+            config=profile.render,
+        ).write(composition, dataset, player_path)
+
+    print_info(profile, composition, mid_path, abc_path, player_path)
 
     return 0
 
