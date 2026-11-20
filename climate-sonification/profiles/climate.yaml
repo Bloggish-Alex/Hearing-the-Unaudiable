@@ -90,3 +90,40 @@ render:
       - "form: 10-bar decades; breath rests at bars 4 and 8; cadence + motif at bar 10"
   player:
     subtitle: "NASA GISTEMP × NOAA Mauna Loa CO₂"
+  chart:
+    title: "Temperature, CO₂ and NH−SH contrast → music"
+    x_label: "Year"
+    left_ylabel: "°C vs 1951-80"
+    right_ylabel: "CO₂ (ppm)"
+    left_color: "#c0392b"
+    right_color: "#16a085"
+    figsize: [13, 8.4]
+    height_ratios: [1, 1.55]
+    dpi: 180
+    zero_line: true
+    zero_color: "#7f8c8d"
+    annotation_color: "#16a085"
+    series:
+      - id: temp
+        axis: left
+        color: "#e74c3c"
+        label: "Temperature anomaly"
+        width: 2.2
+        fill: true
+      - id: co2
+        axis: right
+        color: "#16a085"
+        label: "CO₂"
+        width: 2.0
+      - id: contrast
+        axis: left
+        color: "#9b59b6"
+        label: "NH−SH contrast"
+        width: 1.4
+        dashed: true
+    voices:
+      0: {color: "#e67e22", alpha: 0.85}
+      1: {color: "#3498db", alpha: 0.55}
+    register_lines:
+      - {midi: 50, color: "#1abc9c"}
+      - {midi: 62, color: "#1abc9c"}

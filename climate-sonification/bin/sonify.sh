@@ -6,7 +6,7 @@
 #   bin/sonify.sh --out out/climate
 #   bin/sonify.sh --out out/climate --audio
 #   bin/sonify.sh --out out/climate --audio --soundfont /path/to.sf2
-#   bin/sonify.sh --out out/climate --abc --player
+#   bin/sonify.sh --out out/climate --abc --player --chart
 #   bin/sonify.sh --out out/melody --voices 0 --audio
 #   bin/sonify.sh --list-voices
 #
@@ -26,7 +26,7 @@ cd "$ROOT_DIR"
 usage() {
     cat <<'EOF'
 Usage:
-  bin/sonify.sh --out OUTPUT_BASENAME [--voices 0|0,1] [--profile PROFILE] [--abc] [--player]
+  bin/sonify.sh --out OUTPUT_BASENAME [--voices 0|0,1] [--profile PROFILE] [--abc] [--player] [--chart]
   bin/sonify.sh --out OUTPUT_BASENAME [--voices ...] --audio [--soundfont PATH]
   bin/sonify.sh --list-voices
 

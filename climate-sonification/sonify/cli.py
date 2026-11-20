@@ -10,7 +10,7 @@ from pathlib import Path
 from .model import Composition
 from .compose import Composer
 from .profile import Profile
-from .render import ABCWriter, MidiWriter, PlayerJsonWriter
+from .render import ABCWriter, ChartWriter, MidiWriter, PlayerJsonWriter
 from .sources import ClimateSource
 
 DEFAULT_PROFILE = Path("profiles/climate.yaml")
@@ -62,6 +62,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="also write the web player payload (.js)",
     )
+    parser.add_argument(
+        "--chart",
+        action="store_true",
+        help="also write a chart PNG",
+    )
     return parser
 
 def print_info(
@@ -70,6 +75,7 @@ def print_info(
     mid_path: str,
     abc_path: str | None = None,
     player_path: str | None = None,
+    chart_path: str | None = None,
 ):
     _, total = composition.bar_times()
     voice_label = ", ".join(f"{voice.label}={len(voice.notes)}" for voice in composition.voices)
@@ -86,6 +92,9 @@ def print_info(
 
     if player_path is not None:
         print(f"player   : {player_path}")
+
+    if chart_path is not None:
+        print(f"chart    : {chart_path}")
 
     return
 
@@ -141,7 +150,17 @@ def main(argv: list[str] | None = None) -> int:
             config=profile.render,
         ).write(composition, dataset, player_path)
 
-    print_info(profile, composition, mid_path, abc_path, player_path)
+    chart_path = None
+    if args.chart:
+        chart_path = args.out.with_suffix(".png")
+        ChartWriter(
+            composition,
+            dataset,
+            bar_ticks=profile.timing.bar_ticks,
+            config=profile.render,
+        ).write(chart_path)
+
+    print_info(profile, composition, mid_path, abc_path, player_path, chart_path)
 
     return 0
 
