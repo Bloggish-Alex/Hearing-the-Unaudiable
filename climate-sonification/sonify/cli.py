@@ -58,9 +58,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="also write ABC notation",
     )
     parser.add_argument(
-        "--player",
-        action="store_true",
-        help="also write the web player payload (.js)",
+        "--player-out",
+        "--player_out",
+        type=Path,
+        default=None,
+        help="write the web player payload to PATH",
     )
     parser.add_argument(
         "--chart",
@@ -143,8 +145,9 @@ def main(argv: list[str] | None = None) -> int:
         ).write(composition, abc_path)
 
     player_path = None
-    if args.player:
-        player_path = args.out.with_suffix(".js")
+    if args.player_out is not None:
+        player_path = args.player_out
+        player_path.parent.mkdir(parents=True, exist_ok=True)
         PlayerJsonWriter(
             bar_ticks=profile.timing.bar_ticks,
             config=profile.render,

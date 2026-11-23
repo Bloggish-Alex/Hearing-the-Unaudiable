@@ -90,6 +90,24 @@ render:
       - "form: 10-bar decades; breath rests at bars 4 and 8; cadence + motif at bar 10"
   player:
     subtitle: "NASA GISTEMP × NOAA Mauna Loa CO₂"
+    presentation:
+      header:
+        eyebrow: "NASA GISTEMP × NOAA MAUNA LOA CO₂ · 1925—2024"
+        title: "One Hundred Years"
+        accent: "of Warming"
+        dek: "Temperature anomaly sets pitch and rhythm; CO₂ enters in 1958 as a slow counter-line."
+        footer:
+          - "Data: NASA GISTEMP v4 (public domain) and NOAA GML Mauna Loa CO₂ (public domain)."
+          - "Sonification with musical constraints, not an analytical tool."
+      readout:
+        - {kind: period, label: YEAR}
+        - {label: TEMP, series: temp, format: signed, decimals: 2, unit: "°C", color: "#ff8a5b"}
+        - {label: CO₂, series: co2, format: fixed, decimals: 0, unit: ppm, color: "#2dd4bf"}
+        - {label: NH−SH, series: contrast, format: signed, decimals: 2, unit: "°C", color: "#b388ff"}
+        - {kind: tempo, label: TEMPO, unit: BPM}
+      voices:
+        - {id: 0, label: Temperature, instrument: flute, color: "#ff8a5b", alpha: 0.9}
+        - {id: 1, label: Bass, instrument: cello, color: "#4f9cf9", alpha: 0.55}
   chart:
     title: "Temperature, CO₂ and NH−SH contrast → music"
     x_label: "Year"

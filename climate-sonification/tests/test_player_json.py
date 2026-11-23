@@ -92,6 +92,63 @@ class PlayerJsonWriterTest(unittest.TestCase):
         self.assertEqual(song["notes"][0]["m"], 60)
         self.assertEqual(song["notes"][1]["m"], 62)
 
+        presentation = song["presentation"]
+        self.assertEqual(presentation["header"]["title"], "Test")
+        self.assertEqual(presentation["readout"][0]["kind"], "period")
+        self.assertEqual(presentation["readout"][-1]["kind"], "tempo")
+        self.assertEqual(presentation["voices"][0]["id"], 0)
+        self.assertEqual(presentation["voices"][0]["label"], "melody")
+
+    def test_presentation_config(self) -> None:
+        composition, data = sample()
+        config = {
+            "player": {
+                "presentation": {
+                    "header": {
+                        "eyebrow": "EYEBROW",
+                        "title": "Title",
+                        "accent": "Accent",
+                        "dek": "Dek",
+                        "footer": ["Footer"],
+                    },
+                    "readout": [
+                        {"kind": "period", "label": "YEAR"},
+                        {
+                            "label": "X",
+                            "series": "temp",
+                            "format": "signed",
+                            "decimals": 1,
+                            "unit": "°C",
+                            "color": "#123456",
+                        },
+                    ],
+                    "voices": [
+                        {
+                            "id": 0,
+                            "label": "Lead",
+                            "instrument": "flute",
+                            "color": "#abcdef",
+                            "alpha": 0.7,
+                        }
+                    ],
+                }
+            }
+        }
+        song = PlayerJsonWriter(bar_ticks=2880, config=config).build(
+            composition, data
+        )
+        presentation = song["presentation"]
+        self.assertEqual(presentation["header"]["eyebrow"], "EYEBROW")
+        self.assertEqual(presentation["header"]["title"], "Title")
+        self.assertEqual(presentation["header"]["accent"], "Accent")
+        self.assertEqual(presentation["header"]["dek"], "Dek")
+        self.assertEqual(presentation["header"]["footer"], ["Footer"])
+        self.assertEqual(presentation["readout"][1]["color"], "#123456")
+        self.assertEqual(presentation["voices"][0]["label"], "Lead")
+        self.assertEqual(presentation["voices"][0]["instrument"], "flute")
+        self.assertEqual(presentation["voices"][0]["color"], "#abcdef")
+        self.assertEqual(presentation["voices"][0]["alpha"], 0.7)
+
     def test_javascript_and_json_output(self) -> None:
         composition, data = sample()
         writer = PlayerJsonWriter(bar_ticks=2880)
@@ -116,6 +173,7 @@ class CliPlayerTest(unittest.TestCase):
     def test_cli_writes_player_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp) / "climate"
+            player_path = Path(tmp) / "player" / "player_data.js"
             code = main(
                 [
                     "--profile",
@@ -124,12 +182,13 @@ class CliPlayerTest(unittest.TestCase):
                     str(out),
                     "--voices",
                     "1",
-                    "--player",
+                    "--player-out",
+                    str(player_path),
                 ]
             )
             self.assertEqual(code, 0)
 
-            text = out.with_suffix(".js").read_text()
+            text = player_path.read_text()
             self.assertTrue(text.startswith("window.SONG = "))
             payload = json.loads(text[len("window.SONG = ") : -2])
             self.assertEqual(list(payload["meta"]["counts"]), ["bass"])
@@ -138,6 +197,13 @@ class CliPlayerTest(unittest.TestCase):
             self.assertIn("temp", payload["series"])
             self.assertIn("co2", payload["series"])
             self.assertIn("contrast", payload["series"])
+            presentation = payload["presentation"]
+            self.assertEqual(presentation["header"]["title"], "One Hundred Years")
+            self.assertEqual(presentation["header"]["accent"], "of Warming")
+            self.assertEqual(presentation["readout"][1]["series"], "temp")
+            self.assertEqual(presentation["voices"][0]["id"], 1)
+            self.assertEqual(presentation["voices"][0]["label"], "Bass")
+            self.assertEqual(presentation["voices"][0]["instrument"], "cello")
 
 
 if __name__ == "__main__":

@@ -9,6 +9,22 @@ from pathlib import Path
 
 from ..model import Composition, Dataset
 
+DEFAULT_SERIES_COLORS = [
+    "#ff8a5b",
+    "#2dd4bf",
+    "#b388ff",
+    "#ffd166",
+    "#4f9cf9",
+]
+
+DEFAULT_VOICE_COLORS = [
+    "#ff8a5b",
+    "#4f9cf9",
+    "#2dd4bf",
+    "#ffd166",
+    "#b388ff",
+]
+
 
 class PlayerJsonWriter:
     def __init__(self, bar_ticks: int = 2880, config: dict | None = None):
@@ -140,6 +156,68 @@ class PlayerJsonWriter:
 
         return co2_entry
 
+    def build_presentation(self, composition: Composition, data: Dataset) -> dict:
+        config = self.config.get("presentation", {})
+        periods = data.periods
+        start = self._number(periods[0].start) if periods else None
+        end = self._number(periods[-1].start) if periods else None
+
+        header = {
+            "eyebrow": (
+                f"{start}–{end}"
+                if start is not None and end is not None
+                else ""
+            ),
+            "title": composition.meta.get("title", ""),
+            "accent": "",
+            "dek": "",
+            "footer": [],
+        }
+        header.update(config.get("header", {}))
+
+        readout = config.get("readout")
+        if not readout:
+            readout = [{"kind": "period", "label": "YEAR"}]
+            for index, (series_id, series) in enumerate(data.series.items()):
+                readout.append(
+                    {
+                        "label": series.label or series_id.upper(),
+                        "series": series_id,
+                        "format": "fixed" if series.unit == "ppm" else "signed",
+                        "decimals": 0 if series.unit == "ppm" else 2,
+                        "unit": series.unit,
+                        "color": DEFAULT_SERIES_COLORS[
+                            index % len(DEFAULT_SERIES_COLORS)
+                        ],
+                    }
+                )
+            readout.append({"kind": "tempo", "label": "TEMPO", "unit": "BPM"})
+
+        configured_voices = {
+            int(voice["id"]): voice
+            for voice in config.get("voices", [])
+            if "id" in voice
+        }
+        voices = []
+        for index, voice in enumerate(composition.voices):
+            spec = configured_voices.get(voice.id, {})
+            voices.append(
+                {
+                    "id": voice.id,
+                    "label": spec.get("label", voice.label),
+                    "instrument": spec.get("instrument", ""),
+                    "color": spec.get(
+                        "color",
+                        DEFAULT_VOICE_COLORS[
+                            index % len(DEFAULT_VOICE_COLORS)
+                        ],
+                    ),
+                    "alpha": spec.get("alpha", 0.9),
+                }
+            )
+
+        return {"header": header, "readout": readout, "voices": voices}
+
     def build(self, composition: Composition, data: Dataset) -> dict:
         _, total = composition.bar_times()
         periods = data.periods
@@ -171,6 +249,7 @@ class PlayerJsonWriter:
             "bars": bars,
             "tempo": [[bar, bpm] for bar, bpm in composition.tempo_map],
             "sections": sections,
+            "presentation": self.build_presentation(composition, data),
             "series": series,
             "series_meta": series_meta,
             "annotations": [
